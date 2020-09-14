@@ -13,12 +13,17 @@ class IndeedJobs:
 
     def getRange(self):
         page = self.helpers.download_page(self.url)
+        if page is None:
+            sys.exit('indeed, there was an error downloading indeed jobs webpage. cannot continue further, so fix this first')
         soup = BeautifulSoup(page, 'lxml')
-        count_str = soup.find('div', id="searchCountPages").get_text()
-        max_results = int(count_str.split()[3].replace(',', ''))
-        self.totalJobs = max_results
-        max_results = math.ceil(max_results/50)
-        self.pageRange = max_results
+        try:
+            count_str = soup.find('div', id="searchCountPages").get_text()
+            max_results = int(count_str.split()[3].replace(',', ''))
+            self.totalJobs = max_results
+            max_results = math.ceil(max_results/50)
+            self.pageRange = max_results
+        except:
+            max_results = 0
         return max_results
 
     def get(self):
