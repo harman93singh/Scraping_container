@@ -1,5 +1,5 @@
 from decouple import config, Csv
-from job_boards import indeed
+from job_boards import indeed, monster
 
 indeed_url = config('INDEED_URL')
 total_jobs = []
@@ -9,10 +9,13 @@ job_keywords = ['software+developer', 'software+engineer','software+tester','sof
 for keyword in job_keywords:
     print('Getting jobs for ' + keyword)
     indeed_obj = indeed.IndeedJobs('https://ca.indeed.com/jobs?as_and='+ keyword +'&jt=all&l=ontario&fromage=1&limit=50&sort=date&psf=advsrch&from=advancedsearch')
-    pageRange = indeed_obj.getRange()
+    monster_obj = monster.MonsterJobs('https://www.monster.ca/jobs/search/?q='+ keyword +'&stpage=1&tm=0')
+    pageRangeIndeed = indeed_obj.getRange()
+    pageRangeMonster = monster_obj.getRange()
     indeed_jobs = indeed_obj.get()
+    monster_jobs = monster_obj.get()
     print(f'Saved job listings for ' + keyword + '\n\n')
-    total_jobs = total_jobs + indeed_jobs
+    total_jobs = total_jobs + monster_jobs + indeed_jobs
 
 for job in total_jobs:
     
