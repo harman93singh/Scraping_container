@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import sys
 import math
+import re
 
 from job_boards.helpers import HttpHelpers
 
@@ -86,6 +87,7 @@ class IndeedJobs:
         description_element = soup.find(id='jobDescriptionText')
         try:
             description_text = description_element.text.strip()
+            description_text = re.sub("[^a-zA-Z+3]", " ", description_text)
         except:
             description_text = "Could not find any description"
 
