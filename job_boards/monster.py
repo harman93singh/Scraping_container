@@ -27,12 +27,13 @@ class MonsterJobs:
         return max_results
 
     def get(self):
-
-        print("Total " + str(self.pageRange)+ " pages to search for " + str(self.totalJobs) +" jobs.")
+        totalPageCount = ((self.pageRange%10) + 1 ) if (self.pageRange > 10 ) else 1
+        print("Total " + str(totalPageCount)+ " pages to search for " + str(self.totalJobs) +" jobs.")
         monster_jobs = []
         pageRangeCond = (self.pageRange + 1) if (self.pageRange > 10 ) else 11
         for i in range(10, pageRangeCond):
-            print('Getting jobs from page ' +  str(i))
+            pageCount = ((i%10) + 1 ) if (i > 10 ) else 1
+            print('Getting jobs from page ' +  str(pageCount))
             page = self.helpers.download_page(self.url + '&page=' + str(i))
 
             if page is None:
