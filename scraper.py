@@ -34,11 +34,12 @@ connection = pymysql.connect(host='sl-us-south-1-portal.42.dblayer.com',
                              cursorclass=pymysql.cursors.DictCursor)
 try: 
     cursor = connection.cursor()
-    #with connection.cursor() as cursor: 
     for job in total_jobs: 
-        #import pdb; pdb.set_trace();
-        sql = "INSERT INTO jobscanada(TITLE,COMPANY, COMPANY_URL, DESCRIPTION) VALUES (%s, %s,%s,%s)" 
-        cursor.execute(sql,(job['title'], job['company'], job['href'], job['description_text'])) 
-        connection.commit() 
+        try:
+            sql = "INSERT INTO jobscanada(JOB_ID, TITLE, COMPANY, COMPANY_URL, DESCRIPTION) VALUES (%s, %s, %s,%s,%s)" 
+            cursor.execute(sql,(job['job_id'], job['title'], job['company'], job['href'], job['description_text'])) 
+            connection.commit()
+        except:
+            pass
 finally: 
     connection.close()

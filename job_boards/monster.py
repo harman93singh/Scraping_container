@@ -50,10 +50,15 @@ class MonsterJobs:
                 job["description"] = des_element
         return monster_jobs
 
+    def search_tag(self, tag):
+        return tag.has_attr('data-jobid') 
+
     def __parse_index(self, htmlcontent):
         soup = BeautifulSoup(htmlcontent, 'lxml')
         jobs_container = soup.find(id='ResultsContainer')
         job_items = jobs_container.find_all('section', class_='card-content')
+        job_items = [ div for div in job_items if self.search_tag(div)]
+
         if job_items is None or len(job_items) == 0:
             return []
         
@@ -63,6 +68,7 @@ class MonsterJobs:
             title_elem = job_elem.find('h2', class_='title')
             company_elem = job_elem.find('div', class_='company')
             url_elem = job_elem.find('a')
+            job_id = job_elem.attrs['data-jobid']
 
             if None in (title_elem, company_elem, url_elem):
                 continue
@@ -72,6 +78,7 @@ class MonsterJobs:
                 continue
 
             item = {
+                "job_id" : job_id,
                 "title" : title_elem.text.strip(),
                 "company" : company_elem.text.strip(),
                 "href" : href,

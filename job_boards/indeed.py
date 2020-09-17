@@ -25,7 +25,7 @@ class IndeedJobs:
             self.pageRange = max_results
         except:
             max_results = 0
-        return max_results
+        return max_results  
 
     def get(self):
         print("Total " + str(self.pageRange)+ " pages to search for " + str(self.totalJobs) +" jobs.")
@@ -63,6 +63,7 @@ class IndeedJobs:
             url_elem = job_elem.find('a', class_='jobtitle')
             title_elem = job_elem.find('a', class_='jobtitle')
             company_elem = job_elem.find('span', class_='company')
+            job_id = job_elem.attrs['data-jk']
 
             if None in (title_elem, company_elem, url_elem):
                 continue
@@ -72,6 +73,7 @@ class IndeedJobs:
                 continue
 
             item = {
+                "job_id": job_id,
                 "title" : title_elem.text.strip(),
                 "company" : company_elem.text.strip(),
                 "href" : f'https://www.indeed.com{href}',
