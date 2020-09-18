@@ -2,26 +2,26 @@ from job_boards import indeed, monster
 import pymysql.cursors 
 
 total_jobs = []
-#job_keywords = ['software+developer','software+tester','software+support','software+intern', 'data+engineer','data+scientist','data+analyst','data+entry','data+science']
-job_keywords = ['software+intern']
+job_keywords = ['software+developer','software+tester','software+support','software+intern', 'data+engineer','data+scientist','data+analyst','data+entry','data+science']
+#job_keywords = ['software+intern']
 
 for keyword in job_keywords:
-    #indeed_obj = indeed.IndeedJobs('https://ca.indeed.com/jobs?as_and='+ keyword +'&jt=all&l=ontario&fromage=1&limit=50&sort=date&psf=advsrch&from=advancedsearch')
+    indeed_obj = indeed.IndeedJobs('https://ca.indeed.com/jobs?as_and='+ keyword +'&jt=all&l=ontario&fromage=1&limit=50&sort=date&psf=advsrch&from=advancedsearch')
     monster_obj = monster.MonsterJobs('https://www.monster.ca/jobs/search/?q='+ keyword +'&stpage=1&tm=0')
-    #pageRangeIndeed = indeed_obj.getRange()
+    pageRangeIndeed = indeed_obj.getRange()
     pageRangeMonster = monster_obj.getRange()
-    #print('\nGetting jobs for ' + keyword.replace('+', " ") +' from indeed.ca')
-    #indeed_jobs = indeed_obj.get()
+    print('\nGetting jobs for ' + keyword.replace('+', " ") +' from indeed.ca')
+    indeed_jobs = indeed_obj.get()
     print('Getting jobs for ' + keyword.replace('+', " ") +' from monster.ca')
     monster_jobs = monster_obj.get()
     print(f'Saved job listings for ' + keyword.replace('+', " "))
-    total_jobs = total_jobs + monster_jobs #+ indeed_jobs 
+    total_jobs = total_jobs + monster_jobs + indeed_jobs 
 
-connection = pymysql.connect(host='localhost',
+connection = pymysql.connect(host='sl-us-south-1-portal.42.dblayer.com',
                              database='jobs',
-                             user='root',
-                             password='Mysql1234!',
-                             port=3306,
+                             user='jobs',
+                             password='Stable123',
+                             port=23120,
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
 try: 
