@@ -78,7 +78,8 @@ class IndeedJobs:
                 "company" : company_elem.text.strip(),
                 "href" : f'https://www.indeed.com{href}',
                 "description" : "",
-                "description_text" : ""
+                "description_text" : "",
+                "job_type": "Indeed.ca"
             }
             all_jobs.append(item)
         

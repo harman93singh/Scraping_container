@@ -35,6 +35,7 @@ try:
             print('\n')
             company_id = ""
             job_board_id = ""
+            
             sql = "SELECT * FROM company WHERE company_name=%s"
             cursor.execute(sql, (job['company']))
             result = cursor.fetchone()
@@ -51,16 +52,16 @@ try:
                 company_id = result['company_id']
 
             sql = "SELECT * FROM job_board WHERE job_board_name=%s"
-            cursor.execute(sql, ('Indeed.ca'))
+            cursor.execute(sql, (job["job_type"]))
             result = cursor.fetchone()
             if result is not None:
                 job_board_id = result['job_board_id']
             else:
                 sql= "INSERT INTO job_board(job_board_name) VALUES (%s)"
-                cursor.execute(sql,('Indeed'))
+                cursor.execute(sql,(job["job_type"]))
                 connection.commit()
                 sql = "SELECT * FROM job_board WHERE job_board_name=%s"
-                cursor.execute(sql, ('Indeed.ca'))
+                cursor.execute(sql, (job["job_type"]))
                 result = cursor.fetchone()
                 job_board_id = result['job_board_id']
         

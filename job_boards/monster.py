@@ -84,7 +84,8 @@ class MonsterJobs:
                 "company" : company_elem.text.strip(),
                 "href" : href,
                 "description" : "",
-                "description_text" : ""
+                "description_text" : "",
+                "job_type": "Monster.ca"
             }
             all_jobs.append(item)
         
