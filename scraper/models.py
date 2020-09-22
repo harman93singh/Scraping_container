@@ -19,8 +19,8 @@ class JobBoard(models.Model):
         return self.name
 
 class JobsCanada(models.Model):
-    job_id = models.CharField(max_length=500, unique=True)
-    title = models.CharField(max_length=1000)
+    job_id = models.CharField(max_length=254, unique=True)
+    title = models.TextField(max_length=1000)
     url = models.TextField(max_length=5000)
     description = models.TextField(max_length=12000)
     location = models.TextField(max_length=1000)
