@@ -3,7 +3,7 @@ import sys
 import math
 import re
 
-from job_boards.helpers import HttpHelpers
+from .helpers import HttpHelpers
 
 class IndeedJobs:
     def __init__(self, url):
@@ -92,6 +92,6 @@ class IndeedJobs:
             description_text = description_element.text.strip()
             description_text = re.sub("[^a-zA-Z+3]", " ", description_text)
         except:
-            description_text = "Could not find any description"
+            description_text = ""
 
         return (description_text, str(description_element))

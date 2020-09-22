@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import sys
 import math
-from job_boards.helpers import HttpHelpers
+from .helpers import HttpHelpers
 import re
 
 class MonsterJobs:
@@ -98,6 +98,6 @@ class MonsterJobs:
             description_text = description_element.text.strip()
             description_text = re.sub("[^a-zA-Z+3]", " ", description_text)
         except:
-            description_text = "Sample Text"
+            description_text = ""
         return (description_text, str(description_element))
     
