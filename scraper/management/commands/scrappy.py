@@ -6,8 +6,8 @@ class Command(BaseCommand):
    
     def handle(self, *args, **options):
         total_jobs = []
-        job_keywords = ['software+developer','software+tester','software+support','software+intern', 'data+engineer','data+scientist','data+analyst','data+entry','data+science']
-
+        #job_keywords = ['software+developer','software+tester','software+support','software+intern', 'data+engineer','data+scientist','data+analyst','data+entry','data+science']
+        job_keywords = ['software+developer']
         for keyword in job_keywords:
             indeed_obj = indeed.IndeedJobs('https://ca.indeed.com/jobs?as_and='+ keyword +'&jt=all&l=ontario&fromage=1&limit=50&sort=date&psf=advsrch&from=advancedsearch')
             monster_obj = monster.MonsterJobs('https://www.monster.ca/jobs/search/?q='+ keyword +'&stpage=1&tm=0')
@@ -17,15 +17,15 @@ class Command(BaseCommand):
             indeed_jobs = indeed_obj.get()
             print('Getting jobs for ' + keyword.replace('+', " ") +' from monster.ca')
             monster_jobs = monster_obj.get()
-            print(f'Saved job listings for ' + keyword.replace('+', " "))
+            print('Saved job listings for ' + keyword.replace('+', " "))
             total_jobs = total_jobs + monster_jobs + indeed_jobs 
 
             
         for job in total_jobs:  
-            print(f'Saving job id {job["job_id"]} in database')
-            print(f'Title: {job["title"]}')
-            print(f'Company: {job["company"]}')
-            print(f'Url: {job["href"]}')
+            print('Saving job id' + job["job_id"] + ' in database')
+            print('Title: ' + job["title"])
+            print('Company: ' + job["company"])
+            print('Url: ' + job["href"])
             company = Company.objects.get_or_create(name=job["company"])[0]
             job_board = JobBoard.objects.get_or_create(name= job["job_type"])[0]
             try:

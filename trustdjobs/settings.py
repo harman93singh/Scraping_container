@@ -25,7 +25,7 @@ SECRET_KEY = 'hto3(63h^um04bh#10dyyvlrwd3su=97!@l9ogh7=-(8%c=y#y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -78,10 +78,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'jobs',
-        'USER': 'root',
-        'PASSWORD': 'Mysql1234!',
-        'HOST': 'localhost',
-        'PORT' : '3306'
+        'USER': 'jobs',
+        'PASSWORD': 'Stable123',
+        'HOST': 'sl-us-south-1-portal.42.dblayer.com',
+        'PORT' : '23120'
     }
 }
 
