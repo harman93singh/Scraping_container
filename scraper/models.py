@@ -30,4 +30,21 @@ class JobsCanada(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.title
+        return self.title + " "+ self.job_id
+
+class SkillType(models.Model):
+    skill_type = models.CharField(max_length=254)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.skill_type
+
+class SkillSet(models.Model):
+    skill_name = models.CharField(max_length=254)
+    skill_types = models.ManyToManyField(SkillType)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.skill_name
