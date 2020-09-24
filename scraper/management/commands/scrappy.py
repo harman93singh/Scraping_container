@@ -6,19 +6,19 @@ class Command(BaseCommand):
    
     def handle(self, *args, **options):
         total_jobs = []
-        #job_keywords = ['software+developer','software+tester','software+support','software+intern', 'data+engineer','data+scientist','data+analyst','data+entry','data+science']
-        job_keywords = ['software+developer']
+        job_keywords = ['software+developer','software+tester','software+support','software+intern', 'data+engineer','data+scientist','data+analyst','data+entry','data+science']
+        
         for keyword in job_keywords:
             indeed_obj = indeed.IndeedJobs('https://ca.indeed.com/jobs?as_and='+ keyword +'&jt=all&l=ontario&fromage=1&limit=50&sort=date&psf=advsrch&from=advancedsearch')
-            monster_obj = monster.MonsterJobs('https://www.monster.ca/jobs/search/?q='+ keyword +'&stpage=1&tm=0')
+            #monster_obj = monster.MonsterJobs('https://www.monster.ca/jobs/search/?q='+ keyword +'&stpage=1&tm=0')
             pageRangeIndeed = indeed_obj.getRange()
-            pageRangeMonster = monster_obj.getRange()
+            #pageRangeMonster = monster_obj.getRange()
             print('\nGetting jobs for ' + keyword.replace('+', " ") +' from indeed.ca')
             indeed_jobs = indeed_obj.get()
-            print('Getting jobs for ' + keyword.replace('+', " ") +' from monster.ca')
-            monster_jobs = monster_obj.get()
+            #print('Getting jobs for ' + keyword.replace('+', " ") +' from monster.ca')
+            #monster_jobs = monster_obj.get()
             print('Saved job listings for ' + keyword.replace('+', " "))
-            total_jobs = total_jobs + monster_jobs + indeed_jobs 
+            total_jobs = total_jobs + indeed_jobs #monster_jobs + indeed_jobs 
 
             
         for job in total_jobs:  
@@ -33,8 +33,9 @@ class Command(BaseCommand):
                     job_id=job["job_id"],
                     title=job["title"],
                     url=job["href"],
-                    description=job["description"],
-                    location="",
+                    description=job["description_text"],
+                    job_types=job["jobtype_keywords"],
+                    location=job["location"],
                     company=company,
                     jobBoard= job_board
                 )

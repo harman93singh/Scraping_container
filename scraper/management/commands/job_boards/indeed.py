@@ -2,13 +2,15 @@ from bs4 import BeautifulSoup
 import sys
 import math
 import re
-
+from scraper.models import *
 from .helpers import HttpHelpers
+from nltk.corpus import stopwords
 
 class IndeedJobs:
     def __init__(self, url):
         self.url = url
         self.helpers = HttpHelpers()
+
         self.pageRange = 0
         self.totalJobs = 0
 
@@ -44,9 +46,10 @@ class IndeedJobs:
                 if job_content is None:
                     continue
 
-                text, des_element = self.__parse_details(job_content)
+                text, des_element,jobtyp = self.__parse_details(job_content)
                 job["description_text"] = text
                 job["description"] = des_element
+                job["jobtype_keywords"] = jobtyp
         return indeed_jobs
 
     def __parse_index(self, htmlcontent):
@@ -64,6 +67,16 @@ class IndeedJobs:
             title_elem = job_elem.find('a', class_='jobtitle')
             company_elem = job_elem.find('span', class_='company')
             job_id = job_elem.attrs['data-jk']
+            try:
+                job_location = job_elem.find('span',class_='location').text.strip()
+            except:
+                job_location = None
+        
+            if job_location is None:
+                try:
+                    job_location = job_elem.find('div',class_='location').text.strip()
+                except:
+                    job_location = ""
 
             if None in (title_elem, company_elem, url_elem):
                 continue
@@ -77,8 +90,10 @@ class IndeedJobs:
                 "title" : title_elem.text.strip(),
                 "company" : company_elem.text.strip(),
                 "href" : f'https://www.indeed.com{href}',
+                "location" : job_location,
                 "description" : "",
                 "description_text" : "",
+                "jobtype_keywords" : "",
                 "job_type": "Indeed.ca"
             }
             all_jobs.append(item)
@@ -91,7 +106,21 @@ class IndeedJobs:
         try:
             description_text = description_element.text.strip()
             description_text = re.sub("[^a-zA-Z+3]", " ", description_text)
+            
+            jobtype_keywords = self.keywords_extract(description_text)
         except:
             description_text = ""
+            jobtype_keywords = ""
 
-        return (description_text, str(description_element))
+        return (description_text, str(description_element),jobtype_keywords)
+
+    
+    def keywords_extract(self,text):
+        jobtype_dict = ['part time','full time','contract','intern']
+        text = re.sub("[^a-zA-Z+3]", " ", text)
+        text = text.lower().split()
+        stops = set(stopwords.words("english"))  
+        text = [w for w in text if not w in stops]
+        text = list(set(text))
+        jobtype_keyword = [str(word) for word in text if word in jobtype_dict ]
+        return jobtype_keyword

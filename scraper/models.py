@@ -26,6 +26,7 @@ class JobsCanada(models.Model):
     location = models.TextField(max_length=1000)
     company= models.ForeignKey(Company, on_delete=models.CASCADE, related_name='company')
     jobBoard= models.ForeignKey(JobBoard, on_delete=models.CASCADE, related_name='jobboard')
+    job_types=models.TextField(max_length=5000)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
