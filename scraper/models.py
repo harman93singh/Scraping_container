@@ -3,7 +3,8 @@ from django.db import models
 # Create your models here.
 class Company(models.Model):
     name = models.TextField(max_length=1000)
-    url = models.TextField(max_length=5000)
+    indeed_company_url = models.TextField(max_length=5000)
+    monster_company_url = models.TextField(max_length=5000)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -31,7 +32,7 @@ class JobsCanada(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.title + " "+ self.job_id
+        return self.title + " "+ self.job_id 
 
 class SkillType(models.Model):
     skill_type = models.CharField(max_length=254)
@@ -49,3 +50,4 @@ class SkillSet(models.Model):
     
     def __str__(self):
         return self.skill_name
+

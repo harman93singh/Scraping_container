@@ -70,6 +70,7 @@ class MonsterJobs:
             company_elem = job_elem.find('div', class_='company')
             url_elem = job_elem.find('a')
             job_id = job_elem.attrs['data-jobid']
+            job_location=job_elem.find('div',class_='location')
 
             if None in (title_elem, company_elem, url_elem):
                 continue
@@ -83,6 +84,7 @@ class MonsterJobs:
                 "title" : title_elem.text.strip(),
                 "company" : company_elem.text.strip(),
                 "href" : href,
+                "location" : job_location,
                 "description" : "",
                 "description_text" : "",
                 "job_type": "Monster.ca"

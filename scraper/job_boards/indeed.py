@@ -85,10 +85,17 @@ class IndeedJobs:
             if href is None:
                 continue
 
+            try:
+                company_url = company_elem.find('a').get('href').split('?')[0]
+            except:
+                company_url = ""
+
+
             item = {
                 "job_id": job_id,
                 "title" : title_elem.text.strip(),
                 "company" : company_elem.text.strip(),
+                "company_url" : company_url,
                 "href" : f'https://www.indeed.com{href}',
                 "location" : job_location,
                 "description" : "",
@@ -102,22 +109,25 @@ class IndeedJobs:
 
     def __parse_details(self, htmlcontent):
         soup = BeautifulSoup(htmlcontent, 'lxml')
+        
         description_element = soup.find(id='jobDescriptionText')
+        #full_part = soup.find('span',class_="jobsearch-JobMetadataHeader-item)
         try:
             description_text = description_element.text.strip()
             description_text = re.sub("[^a-zA-Z+3]", " ", description_text)
-            
+            #full_part = full_part.text.strip()
             jobtype_keywords = self.keywords_extract(description_text)
         except:
             description_text = ""
             jobtype_keywords = ""
-
+            #full_part = ""
         return (description_text, str(description_element),jobtype_keywords)
+
 
     
     def keywords_extract(self,text):
-        jobtype_dict = ['part time','full time','contract','intern']
-        text = re.sub("[^a-zA-Z+3]", " ", text)
+        jobtype_dict = ['full-time', 'part-time','contract','permanent', 'remote' ,'temporarily remote','co-op' ,'internship','freelance','contract']
+        text = re.sub("[^a-zA-Z+3]", " ", str(text))
         text = text.lower().split()
         stops = set(stopwords.words("english"))  
         text = [w for w in text if not w in stops]
