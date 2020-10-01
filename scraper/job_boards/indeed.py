@@ -46,10 +46,10 @@ class IndeedJobs:
                 if job_content is None:
                     continue
 
-                text, des_element,jobtyp = self.__parse_details(job_content)
+                text, des_element = self.__parse_details(job_content)
                 job["description_text"] = text
                 job["description"] = des_element
-                job["jobtype_keywords"] = jobtyp
+               
         return indeed_jobs
 
     def __parse_index(self, htmlcontent):
@@ -65,6 +65,12 @@ class IndeedJobs:
         for job_elem in job_items:
             url_elem = job_elem.find('a', class_='jobtitle')
             title_elem = job_elem.find('a', class_='jobtitle')
+            job_type_key = self.keywords_extract(title_elem)
+            try:
+                job_type_key = str(job_type_key)
+            except:
+                job_type_key = ""
+           
             company_elem = job_elem.find('span', class_='company')
             job_id = job_elem.attrs['data-jk']
             try:
@@ -100,7 +106,7 @@ class IndeedJobs:
                 "location" : job_location,
                 "description" : "",
                 "description_text" : "",
-                "jobtype_keywords" : "",
+                "jobtype_keywords" : job_type_key,
                 "job_type": "Indeed.ca"
             }
             all_jobs.append(item)
@@ -111,17 +117,16 @@ class IndeedJobs:
         soup = BeautifulSoup(htmlcontent, 'lxml')
         
         description_element = soup.find(id='jobDescriptionText')
-        #full_part = soup.find('span',class_="jobsearch-JobMetadataHeader-item)
         try:
             description_text = description_element.text.strip()
             description_text = re.sub("[^a-zA-Z+3]", " ", description_text)
-            #full_part = full_part.text.strip()
-            jobtype_keywords = self.keywords_extract(description_text)
+           
+            #jobtype_keywords = self.keywords_extract(description_text)
         except:
             description_text = ""
-            jobtype_keywords = ""
-            #full_part = ""
-        return (description_text, str(description_element),jobtype_keywords)
+            #jobtype_keywords = ""
+        #import pdb; pdb.set_trace()
+        return (description_text, str(description_element))
 
 
     
@@ -129,8 +134,10 @@ class IndeedJobs:
         jobtype_dict = ['full-time', 'part-time','contract','permanent', 'remote' ,'temporarily remote','co-op' ,'internship','freelance','contract']
         text = re.sub("[^a-zA-Z+3]", " ", str(text))
         text = text.lower().split()
+        #import pdb; pdb.set_trace()
         stops = set(stopwords.words("english"))  
         text = [w for w in text if not w in stops]
         text = list(set(text))
         jobtype_keyword = [str(word) for word in text if word in jobtype_dict ]
+       
         return jobtype_keyword

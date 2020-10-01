@@ -42,13 +42,15 @@ class MonsterJobs:
             monster_jobs = monster_jobs + self.__parse_index(page)
 
         for job in monster_jobs:
+                #import pdb; pdb.set_trace()
                 job_content = self.helpers.download_page(job["href"])
                 if job_content is None:
                     continue
 
-                text, des_element = self.__parse_details(job_content)
+                text, des_element, company_url = self.__parse_details(job_content)
                 job["description_text"] = text
                 job["description"] = des_element
+                job["company_url"] = company_url
         return monster_jobs
 
     def search_tag(self, tag):
@@ -76,17 +78,21 @@ class MonsterJobs:
                 continue
 
             href = url_elem.get('href')
+            import pdb; pdb.set_trace()
             if href is None:
                 continue
 
             item = {
-                "job_id" : job_id,
+
+                "job_id": job_id,
                 "title" : title_elem.text.strip(),
                 "company" : company_elem.text.strip(),
-                "href" : href,
-                "location" : job_location,
+                "company_url" : "",
+                "href" :href,
+                "location" : job_location.text.strip(),
                 "description" : "",
                 "description_text" : "",
+                "jobtype_keywords" : "",
                 "job_type": "Monster.ca"
             }
             all_jobs.append(item)
@@ -96,10 +102,19 @@ class MonsterJobs:
     def __parse_details(self, htmlcontent):
         soup = BeautifulSoup(htmlcontent, 'lxml')
         description_element = soup.find('div', class_='job-description')
+        import pdb; pdb.set_trace()
         try:
             description_text = description_element.text.strip()
-            description_text = re.sub("[^a-zA-Z+3]", " ", description_text)
+            #description_text = re.sub("[^a-zA-Z+3]", " ", description_text)
         except:
-            description_text = ""
-        return (description_text, str(description_element))
+             description_text = ""
+        try:
+            
+            company_url = soup.find('a', id_='AboutCompanyProfileLink').get('href')
+            
+        except:
+
+            company_url = ""
+
+        return (description_text, str(description_element), company_url)
     

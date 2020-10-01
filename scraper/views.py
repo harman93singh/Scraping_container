@@ -29,6 +29,8 @@ def index(request):
         print('Title: ' + job["title"])
         print('Company: ' + job["company"])
         print('Url: ' + job["href"])
+        print('job_key' + job["jobtype_keywords"])
+        
         company = Company.objects.get_or_create(name=job["company"])[0]
         if job["job_type"] == "Indeed.ca": 
             company.indeed_company_url = job["company_url"]
@@ -36,6 +38,7 @@ def index(request):
             company.monster_company_url = job["company_url"]
         company.save()
         job_board = JobBoard.objects.get_or_create(name= job["job_type"])[0]
+     
         try:
             JobsCanada.objects.create(
                 job_id=job["job_id"],
@@ -49,7 +52,7 @@ def index(request):
             )
             print('%s added' % (job["title"],))
         except:
-            print("Job already exist!")
-        print('\n')
+            pass
+        
     return HttpResponse("This is inside scraper")
     
