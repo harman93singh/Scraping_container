@@ -3,6 +3,13 @@ import sys
 import math
 from .helpers import HttpHelpers
 import re
+from selenium import webdriver
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+PATH = "C:\Program Files (x86)\chromedriver_win32\chromedriver.exe"
+driver = webdriver.Chrome(PATH)
+
 
 class MonsterJobs:
     def __init__(self, url):
@@ -34,87 +41,113 @@ class MonsterJobs:
         for i in range(10, pageRangeCond):
             pageCount = ((i%10) + 1 ) if (i > 10 ) else 1
             print('Getting jobs from page ' +  str(pageCount))
-            page = self.helpers.download_page(self.url + '&page=' + str(i))
 
-            if page is None:
-                sys.exit('indeed, there was an error downloading indeed jobs webpage. cannot continue further, so fix this first')
+            driver.get(self.url + '&page=' + str(i))
+            driver.fullscreen_window()
+            driver.implicitly_wait(3)
+            try:
+                WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'onetrust-accept-btn-handler'))).click()
+            except:
+                pass
+              
+            jobs = driver.find_element_by_id("SearchResults")
 
-            monster_jobs = monster_jobs + self.__parse_index(page)
+            #page = self.helpers.download_page(self.url + '&page=' + str(i))
+
+            #if page is None:
+            #    sys.exit('indeed, there was an error downloading indeed jobs webpage. cannot continue further, so fix this first')
+
+            monster_jobs = monster_jobs + self.__parse_index(jobs)
+          
 
         for job in monster_jobs:
-                #import pdb; pdb.set_trace()
-                job_content = self.helpers.download_page(job["href"])
-                if job_content is None:
+                
+            job_content = self.helpers.download_page(job["href"])
+            if job_content is None:
+                continue
+
+            text, des_element= self.__parse_details(job_content)
+            job["description_text"] = text
+            job["description"] = des_element
+            #job["company_url"] = company_url
+    
+        return monster_jobs
+    
+    # def search_tag(self, tag):
+    #     return tag.has_attr('data/-jobid') 
+
+    def __parse_index(self, jobs_div):
+        
+        jobs = jobs_div.find_elements_by_class_name('card-content')
+        #jobs = [ div for div in jobs if self.search_tag(div)]
+        all_jobs = []
+        
+        for job in jobs:
+            #driver.implicitly_wait(2)
+            try:
+                soup = BeautifulSoup(job.get_attribute('innerHTML'),'html.parser')
+                title_elem = soup.find('h2', class_='title')
+                company_elem = soup.find('div', class_='company')
+                url_elem = soup.find('a')
+                job_id = job.get_attribute("data-jobid")
+                job_location=soup.find('div',class_='location')
+                
+
+                if None in (title_elem, company_elem, url_elem):
                     continue
 
-                text, des_element, company_url = self.__parse_details(job_content)
-                job["description_text"] = text
-                job["description"] = des_element
-                job["company_url"] = company_url
-        return monster_jobs
+                href = url_elem.get('href')
+                
+                #href = "https://job-openings.monster.ca/software-developer-toronto-on-ca-cincinnati-bell-telephone-company-llc/220049250"
+                
+                if href is None:
+                    continue
+                
+                try:
+                    job.click()
+                    el = driver.find_element_by_id("ContentContainer")
+                    soup = BeautifulSoup(el.get_attribute('innerHTML'), 'html.parser')
+                    link = soup.find("a", id="AboutCompanyProfileLink").get('href')
+                except:
+                    link = ''
+                
+                item = {
 
-    def search_tag(self, tag):
-        return tag.has_attr('data-jobid') 
+                    "job_id": job_id,
+                    "title" : title_elem.text.strip(),
+                    "company" : company_elem.text.strip(),
+                    "company_url" : link,
+                    "href" :href,
+                    "location" : job_location.text.strip(),
+                    "description" : "",
+                    "description_text" : "",
+                    "jobtype_keywords" : "",
+                    "job_type": "Monster.ca"
+                }
+                all_jobs.append(item)
+            except:
+                pass
 
-    def __parse_index(self, htmlcontent):
-        soup = BeautifulSoup(htmlcontent, 'lxml')
-        jobs_container = soup.find(id='ResultsContainer')
-        job_items = jobs_container.find_all('section', class_='card-content')
-        job_items = [ div for div in job_items if self.search_tag(div)]
-
-        if job_items is None or len(job_items) == 0:
-            return []
-        
-        all_jobs = []
-
-        for job_elem in job_items:
-            title_elem = job_elem.find('h2', class_='title')
-            company_elem = job_elem.find('div', class_='company')
-            url_elem = job_elem.find('a')
-            job_id = job_elem.attrs['data-jobid']
-            job_location=job_elem.find('div',class_='location')
-
-            if None in (title_elem, company_elem, url_elem):
-                continue
-
-            href = url_elem.get('href')
-            import pdb; pdb.set_trace()
-            if href is None:
-                continue
-
-            item = {
-
-                "job_id": job_id,
-                "title" : title_elem.text.strip(),
-                "company" : company_elem.text.strip(),
-                "company_url" : "",
-                "href" :href,
-                "location" : job_location.text.strip(),
-                "description" : "",
-                "description_text" : "",
-                "jobtype_keywords" : "",
-                "job_type": "Monster.ca"
-            }
-            all_jobs.append(item)
         
         return all_jobs
-    
+        
     def __parse_details(self, htmlcontent):
         soup = BeautifulSoup(htmlcontent, 'lxml')
         description_element = soup.find('div', class_='job-description')
-        import pdb; pdb.set_trace()
+        company_url = soup.find('div', id_='AboutCompany')
+        
         try:
             description_text = description_element.text.strip()
             #description_text = re.sub("[^a-zA-Z+3]", " ", description_text)
         except:
-             description_text = ""
-        try:
+                description_text = ""
+        # try:
             
-            company_url = soup.find('a', id_='AboutCompanyProfileLink').get('href')
+        #     company_url = company_url.text.strip()
             
-        except:
+        # except:
 
-            company_url = ""
+        #     company_url = ""
 
-        return (description_text, str(description_element), company_url)
-    
+        return (description_text, str(description_element))
+        

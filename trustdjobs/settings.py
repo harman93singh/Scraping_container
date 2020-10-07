@@ -77,11 +77,11 @@ WSGI_APPLICATION = 'trustdjobs.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'jobs',
-        'USER': 'jobs',
-        'PASSWORD': 'Stable123',
-        'HOST': 'sl-us-south-1-portal.42.dblayer.com',
-        'PORT' : '23120'
+        'NAME': 'scrapjobs',
+        'USER': 'root',
+        'PASSWORD': 'chawla',
+        'HOST': 'localhost',
+        'PORT' : '3306'
     }
 }
 
