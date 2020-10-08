@@ -3,12 +3,23 @@ import sys
 import math
 from .helpers import HttpHelpers
 import re
+import time
 from selenium import webdriver
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+# chromeOptions = Options()
+# #chromeOptions.headless = True
+# chromeOptions.add_argument('--headless')
+# chromeOptions.add_argument('--disable-gpu')
+
+# chromeOptions.add_argument('--no-sandbox')
+# chromeOptions.add_argument('--disable-dev-shm-usage')
 PATH = "C:\Program Files (x86)\chromedriver_win32\chromedriver.exe"
 driver = webdriver.Chrome(PATH)
+
+
 
 
 class MonsterJobs:
@@ -83,7 +94,7 @@ class MonsterJobs:
         all_jobs = []
         
         for job in jobs:
-            #driver.implicitly_wait(2)
+            driver.implicitly_wait(2)
             try:
                 soup = BeautifulSoup(job.get_attribute('innerHTML'),'html.parser')
                 title_elem = soup.find('h2', class_='title')
@@ -105,6 +116,7 @@ class MonsterJobs:
                 
                 try:
                     job.click()
+                    time.sleep(2)
                     el = driver.find_element_by_id("ContentContainer")
                     soup = BeautifulSoup(el.get_attribute('innerHTML'), 'html.parser')
                     link = soup.find("a", id="AboutCompanyProfileLink").get('href')

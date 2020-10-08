@@ -11,34 +11,32 @@ def index(request):
     #job_keywords = ['software+developer','software+tester','software+support','software+intern', 'data+engineer','data+scientist','data+analyst','data+entry','data+science']
     job_keywords = ['software+developer']
     for keyword in job_keywords:
-        #indeed_obj = indeed.IndeedJobs('https://ca.indeed.com/jobs?as_and='+ keyword +'&jt=all&l=ontario&fromage=1&limit=50&sort=date&psf=advsrch&from=advancedsearch')
-        monster_obj = monster.MonsterJobs('https://www.monster.ca/jobs/search/?q='+ keyword +'&stpage=1&tm=0')
-        #pageRangeIndeed = indeed_obj.getRange()
-        pageRangeMonster = monster_obj.getRange()
+        indeed_obj = indeed.IndeedJobs('https://ca.indeed.com/jobs?as_and='+ keyword +'&jt=all&l=ontario&fromage=1&limit=50&sort=date&psf=advsrch&from=advancedsearch')
+        #monster_obj = monster.MonsterJobs('https://www.monster.ca/jobs/search/?q='+ keyword +'&stpage=1&tm=0')
+        pageRangeIndeed = indeed_obj.getRange()
+        #pageRangeMonster = monster_obj.getRange()
         
         #print('\nGetting jobs for ' + keyword.replace('+', " ") +' from indeed.ca')
-        #indeed_jobs = indeed_obj.get()
+        indeed_jobs = indeed_obj.get()
         print('Getting jobs for ' + keyword.replace('+', " ") +' from monster.ca')
-        monster_jobs = monster_obj.get()
+        #monster_jobs = monster_obj.get()
         print('Saved job listings for ' + keyword.replace('+', " "))
+        total_jobs = total_jobs + indeed_jobs #monster_jobs #+ indeed_jobs 
         
-        total_jobs = total_jobs + monster_jobs #+ indeed_jobs 
-        
-            
     for job in total_jobs:
          
-        
-        print('Saving job id' + job["job_id"] + ' in database')
-        print('Title: ' + job["title"])
+        #print('Saving job id' + job["job_id"] + ' in database')
+        #print('Title: ' + job["title"])
         print('Company: ' + job["company"])
-        print('Url: ' + job["href"])
-        print('job_key' + job["jobtype_keywords"])
+        #print('Url: ' + job["href"])
+        #print('job_key' + job["jobtype_keywords"])
+        print('job_link' + job["company_url"])
         
         company = Company.objects.get_or_create(name=job["company"])[0]
-        if job["job_type"] == "Indeed.ca": 
-            company.indeed_company_url = job["company_url"]
-        else:
+        if job["job_type"] == "Monster.ca": 
             company.monster_company_url = job["company_url"]
+        else:
+            company.indeed_company_url = job["company_url"]
         company.save()
         job_board = JobBoard.objects.get_or_create(name= job["job_type"])[0]
      

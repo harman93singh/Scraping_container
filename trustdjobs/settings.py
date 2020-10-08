@@ -80,6 +80,7 @@ DATABASES = {
         'NAME': 'scrapjobs',
         'USER': 'root',
         'PASSWORD': 'chawla',
+        #'HOST': 'sl-us-south-1-portal.42.dblayer.com'
         'HOST': 'localhost',
         'PORT' : '3306'
     }
