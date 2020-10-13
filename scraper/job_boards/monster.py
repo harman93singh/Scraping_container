@@ -9,15 +9,15 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-# chromeOptions = Options()
+chromeOptions = Options()
 # #chromeOptions.headless = True
-# chromeOptions.add_argument('--headless')
-# chromeOptions.add_argument('--disable-gpu')
+chromeOptions.add_argument('--headless')
+chromeOptions.add_argument('--disable-gpu')
 
-# chromeOptions.add_argument('--no-sandbox')
+chromeOptions.add_argument('--no-sandbox')
 # chromeOptions.add_argument('--disable-dev-shm-usage')
-PATH = "C:\Program Files (x86)\chromedriver_win32\chromedriver.exe"
-driver = webdriver.Chrome(PATH)
+PATH = "/usr/bin/chromedriver"
+driver = webdriver.Chrome(PATH,chrome_options=chromeOptions)
 
 
 
@@ -54,7 +54,8 @@ class MonsterJobs:
             print('Getting jobs from page ' +  str(pageCount))
 
             driver.get(self.url + '&page=' + str(i))
-            driver.fullscreen_window()
+            driver.set_window_size(1920, 1080)
+            #driver.fullscreen_window()
             driver.implicitly_wait(3)
             try:
                 WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'onetrust-accept-btn-handler'))).click()
@@ -62,7 +63,9 @@ class MonsterJobs:
                 pass
               
             jobs = driver.find_element_by_id("SearchResults")
-
+            with open('file.txt', 'w') as file:
+                file.write(driver.page_source)
+                   
             #page = self.helpers.download_page(self.url + '&page=' + str(i))
 
             #if page is None:
@@ -118,7 +121,11 @@ class MonsterJobs:
                     job.click()
                     time.sleep(2)
                     el = driver.find_element_by_id("ContentContainer")
+                    #import pdb; pdb.set_trace()
                     soup = BeautifulSoup(el.get_attribute('innerHTML'), 'html.parser')
+                    with open('container.txt', 'a') as file:
+                        file.write(el.get_attribute('innerHTML'))
+                    
                     link = soup.find("a", id="AboutCompanyProfileLink").get('href')
                 except:
                     link = ''

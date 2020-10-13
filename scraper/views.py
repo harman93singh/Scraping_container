@@ -8,20 +8,20 @@ def index(request):
     total_jobs = []
     #skill_list = SkillSet.objects.all().values_list('skill_name')
     # print(skill_list)
-    #job_keywords = ['software+developer','software+tester','software+support','software+intern', 'data+engineer','data+scientist','data+analyst','data+entry','data+science']
-    job_keywords = ['software+developer']
+    job_keywords = ['software+developer','software+tester','software+support','software+intern', 'data+engineer','data+scientist','data+analyst','data+entry','data+science']
+    #job_keywords = ['software+developer']
     for keyword in job_keywords:
         indeed_obj = indeed.IndeedJobs('https://ca.indeed.com/jobs?as_and='+ keyword +'&jt=all&l=ontario&fromage=1&limit=50&sort=date&psf=advsrch&from=advancedsearch')
-        #monster_obj = monster.MonsterJobs('https://www.monster.ca/jobs/search/?q='+ keyword +'&stpage=1&tm=0')
+        monster_obj = monster.MonsterJobs('https://www.monster.ca/jobs/search/?q='+ keyword +'&stpage=1&tm=0')
         pageRangeIndeed = indeed_obj.getRange()
-        #pageRangeMonster = monster_obj.getRange()
+        pageRangeMonster = monster_obj.getRange()
         
-        #print('\nGetting jobs for ' + keyword.replace('+', " ") +' from indeed.ca')
+        print('\nGetting jobs for ' + keyword.replace('+', " ") +' from indeed.ca')
         indeed_jobs = indeed_obj.get()
         print('Getting jobs for ' + keyword.replace('+', " ") +' from monster.ca')
-        #monster_jobs = monster_obj.get()
+        monster_jobs = monster_obj.get()
         print('Saved job listings for ' + keyword.replace('+', " "))
-        total_jobs = total_jobs + indeed_jobs #monster_jobs #+ indeed_jobs 
+        total_jobs = total_jobs + monster_jobs + indeed_jobs #+ monster_jobs #+ indeed_jobs 
         
     for job in total_jobs:
          
@@ -33,7 +33,7 @@ def index(request):
         print('job_link' + job["company_url"])
         
         company = Company.objects.get_or_create(name=job["company"])[0]
-        if job["job_type"] == "Monster.ca": 
+        if job["job_type"] == "Monster.ca" or job["job_type"] == "monster.ca": 
             company.monster_company_url = job["company_url"]
         else:
             company.indeed_company_url = job["company_url"]
