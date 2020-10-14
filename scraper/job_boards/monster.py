@@ -15,7 +15,7 @@ chromeOptions.add_argument('--headless')
 chromeOptions.add_argument('--disable-gpu')
 
 chromeOptions.add_argument('--no-sandbox')
-# chromeOptions.add_argument('--disable-dev-shm-usage')
+chromeOptions.add_argument('--disable-dev-shm-usage')
 PATH = "/usr/bin/chromedriver"
 driver = webdriver.Chrome(PATH,chrome_options=chromeOptions)
 

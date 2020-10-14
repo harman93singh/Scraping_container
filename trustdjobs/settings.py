@@ -25,7 +25,7 @@ SECRET_KEY = 'hto3(63h^um04bh#10dyyvlrwd3su=97!@l9ogh7=-(8%c=y#y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*','35.239.114.167','https://jobs-dot-trustdjobs.uc.r.appspot.com/']
+ALLOWED_HOSTS = ['*','34.68.97.180','https://jobs-dot-trustdjobs.uc.r.appspot.com/']
 
 
 # Application definition
