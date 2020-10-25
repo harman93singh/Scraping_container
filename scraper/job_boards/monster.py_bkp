@@ -9,15 +9,18 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-from nltk.corpus import stopwords
 chromeOptions = Options()
-chromeOptions.headless = True
+# #chromeOptions.headless = True
 chromeOptions.add_argument('--headless')
 chromeOptions.add_argument('--disable-gpu')
+
 chromeOptions.add_argument('--no-sandbox')
 chromeOptions.add_argument('--disable-dev-shm-usage')
 PATH = "/usr/bin/chromedriver"
 driver = webdriver.Chrome(PATH,chrome_options=chromeOptions)
+
+
+
 
 class MonsterJobs:
     def __init__(self, url):
@@ -60,26 +63,37 @@ class MonsterJobs:
                 pass
               
             jobs = driver.find_element_by_id("SearchResults")
-            #with open('file.txt', 'w') as file:
-            #    file.write(driver.page_source)
+            with open('file.txt', 'w') as file:
+                file.write(driver.page_source)
                    
+            #page = self.helpers.download_page(self.url + '&page=' + str(i))
+
+            #if page is None:
+            #    sys.exit('indeed, there was an error downloading indeed jobs webpage. cannot continue further, so fix this first')
+
             monster_jobs = monster_jobs + self.__parse_index(jobs)
           
 
         for job in monster_jobs:
+                
             job_content = self.helpers.download_page(job["href"])
             if job_content is None:
                 continue
-            text, des_element,job_type= self.__parse_details(job_content)
+
+            text, des_element= self.__parse_details(job_content)
             job["description_text"] = text
             job["description"] = des_element
-            job["jobtype_keywords"] = job_type
+            #job["company_url"] = company_url
     
         return monster_jobs
     
+    # def search_tag(self, tag):
+    #     return tag.has_attr('data/-jobid') 
+
     def __parse_index(self, jobs_div):
         
         jobs = jobs_div.find_elements_by_class_name('card-content')
+        #jobs = [ div for div in jobs if self.search_tag(div)]
         all_jobs = []
         
         for job in jobs:
@@ -97,6 +111,9 @@ class MonsterJobs:
                     continue
 
                 href = url_elem.get('href')
+                
+                #href = "https://job-openings.monster.ca/software-developer-toronto-on-ca-cincinnati-bell-telephone-company-llc/220049250"
+                
                 if href is None:
                     continue
                 
@@ -104,7 +121,11 @@ class MonsterJobs:
                     job.click()
                     time.sleep(2)
                     el = driver.find_element_by_id("ContentContainer")
+                    #import pdb; pdb.set_trace()
                     soup = BeautifulSoup(el.get_attribute('innerHTML'), 'html.parser')
+                    with open('container.txt', 'a') as file:
+                        file.write(el.get_attribute('innerHTML'))
+                    
                     link = soup.find("a", id="AboutCompanyProfileLink").get('href')
                 except:
                     link = ''
@@ -126,29 +147,26 @@ class MonsterJobs:
             except:
                 pass
 
+        
         return all_jobs
         
     def __parse_details(self, htmlcontent):
         soup = BeautifulSoup(htmlcontent, 'lxml')
         description_element = soup.find('div', class_='job-description')
         company_url = soup.find('div', id_='AboutCompany')
+        
         try:
             description_text = description_element.text.strip()
+            #description_text = re.sub("[^a-zA-Z+3]", " ", description_text)
         except:
                 description_text = ""
-        try:
-            job_type_k = self.keywords_extract(description_text)
-        except:
-            job_type_k = ""
-        return (description_text, str(description_element),job_type_k)
-    
-    
-    def keywords_extract(self,text):
-        jobtype_dict = ['full-time', 'part-time','contract','permanent', 'remote' ,'temporarily remote','co-op' ,'internship','freelance','contract']
-        text = re.sub("[^a-zA-Z+3]", " ", str(text))
-        text = text.lower().split()
-        stops = set(stopwords.words("english"))  
-        text = [w for w in text if not w in stops]
-        text = list(set(text))
-        jobtype_keyword = [str(word) for word in text if word in jobtype_dict ]
-        return jobtype_keyword    
+        # try:
+            
+        #     company_url = company_url.text.strip()
+            
+        # except:
+
+        #     company_url = ""
+
+        return (description_text, str(description_element))
+        
